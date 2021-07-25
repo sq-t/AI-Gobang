@@ -21,7 +21,7 @@ import './index.css';
     }
 } */
 
-const size = 100;//棋盘大小
+const size = 400;//棋盘大小
 
 //函数组件
 function Square(props) {
@@ -89,7 +89,7 @@ class Game extends React.Component {
         const history = this.state.history.slice();
         const squares = Object.assign([], history[history.length - 1].squares);
         const coordinate = this.state.history[this.state.history.length - 1].coordinate;
-        if (squares[i] || calculeteWinner(squares,coordinate).winner) {
+        if (squares[i] || calculeteWinner(squares, coordinate).winner) {
             return;
         }
         squares[i] = this.state.xIsNext ? 'X' : 'O';
@@ -125,12 +125,12 @@ class Game extends React.Component {
     }
 
     render() {
-        console.log(this.state.history)
+        // console.log(this.state.history)
         const [squares, coordinate] = [
             this.state.history[this.state.history.length - 1].squares,
             this.state.history[this.state.history.length - 1].coordinate
         ];
-        const result = calculeteWinner(squares,coordinate);
+        const result = calculeteWinner(squares, coordinate);
         const [winner, line] = [result.winner, result.line];
         let status;
         if (winner) {
@@ -170,23 +170,27 @@ ReactDOM.render(
 );
 
 
-function calculeteWinner(squares,coordinate) {
-    const row=Math.sqrt(size);
-    let count=0;
-    do{
+function calculeteWinner(squares, coordinate) {
+    const row = Math.sqrt(size);
+    let count = 0;
+    do {
         const lines = [
-            [coordinate-(count+4),coordinate-(count+3),coordinate-(count+2),coordinate-(count+1),coordinate-count],
-            [coordinate-(count+4)*row,coordinate-(count+3)*row,coordinate-(count+2)*row,coordinate-(count+1)*row,coordinate-count*row],
-            [coordinate-(count+4)*(row+1),coordinate-(count+3)*(row+1),coordinate-(count+2)*(row+1),coordinate-(count+1)*(row+1),coordinate-count*(row+1)],
-            [coordinate-(count+4)*(row-1),coordinate-(count+3)*(row-1),coordinate-(count+2)*(row-1),coordinate-(count+1)*(row-1),coordinate-count*(row-1)]
+            [coordinate - (4 - count), coordinate - (3 - count), coordinate - (2 - count), coordinate - (1 - count), coordinate + count],
+            [coordinate - (4 - count) * row, coordinate - (3 - count) * row, coordinate - (2 - count) * row, coordinate - (1 - count) * row, coordinate + count * row],
+            [coordinate - (4 - count) * (row + 1), coordinate - (3 - count) * (row + 1), coordinate - (2 - count) * (row + 1), coordinate - (1 - count) * (row + 1), coordinate + count * (row + 1)],
+            [coordinate - (4 - count) * (row - 1), coordinate - (3 - count) * (row - 1), coordinate - (2 - count) * (row - 1), coordinate - (1 - count) * (row - 1), coordinate + count * (row - 1)]
         ];
         for (const line of lines) {
-            const [a, b, c,d,e] = line;
-            if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]&& squares[a] === squares[d]&& squares[a] === squares[e]) {
-                return { winner: squares[a], line: line };
+            const [a, b, c, d, e] = line;
+            if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c] && squares[a] === squares[d] && squares[a] === squares[e]) {
+                const [a1, b1, c1, d1, e1] = [Math.floor(a / row), Math.floor(b / row), Math.floor(c / row), Math.floor(d / row), Math.floor(e / row)];
+                const [a2, b2, c2, d2, e2] = [Math.floor(a / row), Math.floor(b / row) - 1, Math.floor(c / row) - 2, Math.floor(d / row) - 3, Math.floor(e / row) - 4];
+                if ((a1 === b1 && a1 === c1 && a1 === d1 && a1 === e1) || (a2 === b2 && a2 === c2 && a2 === d2 && a2 === e2)) {
+                    return { winner: squares[a], line: line };
+                }
             }
         }
         count++;
-    }while(count<5);
+    } while (count < 5);
     return { winner: null, line: null };
 }
