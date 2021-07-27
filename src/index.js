@@ -134,11 +134,11 @@ class Game extends React.Component {
         const [winner, line] = [result.winner, result.line];
         let status;
         if (winner) {
-            status = `Winner: ${winner}!`;
+            status =<div>Winner: <span className="winner">{winner}</span></div>;
         } else if (!squares.includes(null) && winner === null) {
-            status = `Draw!`;
+            status = <div className="draw">Draw!</div>;
         } else {
-            status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
+            status =<div>Next player: <span className="next">{this.state.xIsNext ? 'X' : 'O'}</span></div> ;
         }
 
         return (
@@ -152,8 +152,8 @@ class Game extends React.Component {
                     />
                 </div>
                 <div className="game-info">
-                    <div>Step: {this.state.stepNumber}</div>
-                    <div>{status}</div>
+                    <div>Step: <span className="step">{this.state.stepNumber}</span></div>
+                    {status}
                     <div><button onClick={() => { this.reset() }}>重新开始</button></div>
                     <div>{squares.every((value) => { return value ? false : true; }) ? '' : <button onClick={() => { this.prevStep() }}>悔棋</button>}</div>
                 </div>

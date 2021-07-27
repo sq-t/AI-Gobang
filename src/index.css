@@ -57,3 +57,34 @@ ul {
 .game-info {
     margin-left: 20px;
 }
+
+.game-info div {
+    box-sizing: border-box;
+    margin: 15px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.step {
+    color: saddlebrown;
+}
+
+.winner {
+    color: red;
+}
+
+.draw {
+    color: yellow;
+}
+
+.next {
+    color: royalblue;
+}
+
+.game-info div button {
+    width: 100px;
+    height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
