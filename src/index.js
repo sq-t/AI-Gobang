@@ -81,7 +81,9 @@ class Game extends React.Component {
                 coordinate: null
             }],
             stepNumber: 0,
-            xIsNext: true
+            xIsNext: true,
+            spendTime: 0,
+            timer: null
         };
     }
 
@@ -93,38 +95,57 @@ class Game extends React.Component {
             return;
         }
         squares[i] = this.state.xIsNext ? 'X' : 'O';
-        this.setState({
+        this.setState((state, props) => ({
             history: history.concat([{
                 squares: squares,
                 coordinate: i
             }]),
-            stepNumber: this.state.stepNumber + 1,
-            xIsNext: !this.state.xIsNext
-        });
+            stepNumber: state.stepNumber + 1,
+            xIsNext: !state.xIsNext
+        }));
+        if (this.state.timer === null) {
+            const timer = setInterval(() => {
+                this.setState((state, props) => ({
+                    spendTime: state.spendTime + 1
+                }));
+            }, 1000);
+            this.setState({
+                timer: timer
+            });
+        }
     }
 
     reset() {
+        clearInterval(this.state.timer);
         this.setState({
             history: [{
                 squares: Array(size).fill(null),
                 coordinate: null
             }],
             stepNumber: 0,
-            xIsNext: 'X'
+            xIsNext: 'X',
+            spendTime: 0,
+            timer: null
         });
     }
 
     prevStep() {
         const history = this.state.history.slice();
         history.pop();
-        this.setState({
+        this.setState((state, props) => ({
             history: history,
-            stepNumber: this.state.stepNumber - 1,
-            xIsNext: !this.state.xIsNext
-        });
+            stepNumber: state.stepNumber - 1,
+            xIsNext: !state.xIsNext
+        }));
     }
 
     render() {
+
+        const [hour, minute, second] = [
+            showNum(parseInt(this.state.spendTime / 60 / 60)),
+            showNum(parseInt(this.state.spendTime / 60) % 60),
+            showNum(this.state.spendTime % 60)
+        ];
         // console.log(this.state.history)
         const [squares, coordinate] = [
             this.state.history[this.state.history.length - 1].squares,
@@ -134,11 +155,12 @@ class Game extends React.Component {
         const [winner, line] = [result.winner, result.line];
         let status;
         if (winner) {
-            status =<div>Winner: <span className="winner">{winner}</span></div>;
+            clearInterval(this.state.timer);
+            status = <div>Winner: <span className="winner">{winner}</span></div>;
         } else if (!squares.includes(null) && winner === null) {
             status = <div className="draw">Draw!</div>;
         } else {
-            status =<div>Next player: <span className="next">{this.state.xIsNext ? 'X' : 'O'}</span></div> ;
+            status = <div>Next player: <span className="next">{this.state.xIsNext ? 'X' : 'O'}</span></div>;
         }
 
         return (
@@ -152,10 +174,11 @@ class Game extends React.Component {
                     />
                 </div>
                 <div className="game-info">
+                    <div>Spend Time: {hour}:{minute}:{second}</div>
                     <div>Step: <span className="step">{this.state.stepNumber}</span></div>
                     {status}
                     <div><button onClick={() => { this.reset() }}>重新开始</button></div>
-                    <div>{squares.every((value) => { return value ? false : true; }) ? '' : <button onClick={() => { this.prevStep() }}>悔棋</button>}</div>
+                    <div>{squares.every((value) => { return value ? false : true; }) ? '' : <button onClick={() => { this.prevStep() }} disabled={winner ? true : false}>悔棋</button>}</div>
                 </div>
             </div>
         );
@@ -193,4 +216,11 @@ function calculeteWinner(squares, coordinate) {
         count++;
     } while (count < 5);
     return { winner: null, line: null };
+}
+
+function showNum(num) {
+    if (num < 10) {
+        return '0' + num;
+    }
+    return num;
 }

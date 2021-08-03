@@ -88,3 +88,7 @@ ul {
     font-weight: bold;
     letter-spacing: 1px;
 }
+
+.game-info div button:disabled {
+    cursor: not-allowed;
+}
